@@ -14,7 +14,7 @@ This project is a web-based platform designed to create personalized Christian d
 - **Backend:** Python (OpenAI API, Langchain)
 - **Deployment:** AWS (Lambda, GitHub Actions)
 ## Future Work
-- Impementation of features
+- Implementation of features
 - Integrate more cultural contexts (e.g., U.S., Korea, Mexico).
 - Beta testing with real users.
 - Bug fixes and UI improvements.
