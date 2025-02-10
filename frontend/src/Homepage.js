@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 const Homepage = () => {
   return (
     <div>
-      <h1>Welcome to the Homepage!</h1>
-      <p>Press the button below to start the quiz:</p>
+      <h1>welcome meseege</h1>
+      <p>daily bread</p>
       <Link to="/quiz">
         <button>Start Quiz</button>
       </Link>
