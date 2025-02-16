@@ -1,68 +1,106 @@
 import os
 import getpass
-from langchain.chat_models import init_chat_model
+import requests
+from langchain.chat_models import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+#from googletrans import Translator  # Alternative: Use DeepL API for better translation
+from deep_translator import GoogleTranslator
 
+
+# API Keys
+SCRIPTURE_API_KEY = os.getenv("SCRIPTURE_API_KEY") or getpass.getpass("Enter API key for Scripture API: ")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or getpass.getpass("Enter API key for OpenAI: ")
+
+# Headers for Scripture API
+SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
 
 class DevoWriter:
-    def __init__(self, api_key=None):
-        # Handle OpenAI API key
-        if api_key:
-            os.environ["OPENAI_API_KEY"] = api_key
-        elif not os.environ.get("OPENAI_API_KEY"):
-            os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter API key for OpenAI: ")
+    def __init__(self):
+        # Initialize OpenAI model via LangChain
+        self.model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
 
-        # Initialize Langchain model
-        self.model = init_chat_model("gpt-4o-mini", model_provider="openai")
-
-    def generate_devo(self, user_input):
+    def fetch_bible_verse(self, passage: str):
         """
-        Generates a devotional (currently a story until set up with the database)
-
-        :param user_input: The list of quiz choices for devo generation.
-        :return: The AI-generated response.
+        Fetches a Bible verse from the Scripture API.
+        :param passage: Bible reference (e.g., "John 3:16")
+        :return: Verse text or error message
         """
-        # Convert the list input into a string (e.g., a prompt that makes sense for the AI)
+        url = f"https://api.scripture.api.bible/v1/bibles/ENG-ESV/verses/{passage}"
+        response = requests.get(url, headers=SCRIPTURE_HEADERS)
+        if response.status_code == 200:
+            return response.json().get("data", {}).get("content", "Verse not found.")
+        return "Error retrieving verse."
+
+    def translate_text(self, text, target_lang):
+        text = str(text)  # Ensure it's a string
+        MAX_CHARS = 5000
+        chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
+        translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
+        return " ".join(translated_chunks)
+
+    def generate_devo(self, user_input, language="en"):
+        """
+        Generates a culturally adapted devotional.
+        :param user_input: Quiz input like ["Korea", "new testament", "loneliness"]
+        :param language: Language ('en', 'ja', 'ko', 'es')
+        :return: AI-generated devotional text.
+        """
         user_input_str = ", ".join(user_input)
 
-        # Define the system message to guide the AI's task
-        system_template = "Generate a story based on the following topics: {topics}"
+        # Fetch relevant Bible verse based on topics
+        bible_verse = self.fetch_bible_verse("Matthew 11:28")  # Example verse on loneliness
 
-        # Create a prompt template using the user input
+        # Define structured LangChain prompt
+        system_template = (
+            "You are a devotional writer skilled in cultural adaptation while not over-doing the cultural aspects. "
+            "Don't explicitly mention cultural facts. "
+            "Write a devotional incorporating the following themes: {topics}. "
+            "Include a relevant Bible verse: {verse}. Ensure it resonates with {culture} culture."
+
+        )
+
+        # Set cultural context based on user input
+        culture = "Korean" if "Korea" in user_input else "Japanese" if "Japan" in user_input else "Latin American"
+
         prompt_template = ChatPromptTemplate.from_messages(
             [("system", system_template), ("user", "{text}")]
         )
 
-        # Prepare the message for the model, filling the placeholders with user input
-        prompt = prompt_template.invoke({"topics": user_input_str, "text": "Please write a story about these topics that talks about the bible."})
+        prompt = prompt_template.invoke({
+            "topics": user_input_str,
+            "verse": bible_verse,
+            "culture": culture,
+            "text": "Write a culturally adapted devotional."
+        })
 
-        # Call the model to generate a response
+        # Generate AI response
         response = self.model.invoke(prompt)
 
-        # Return the response
+        # Translate if needed
+        if language != "en":
+            response = self.translate_text(response, language)
+
         return response
 
-    def get_response_content(self, user_input):
+    def get_response_content(self, user_input, language="en"):
         """
-        Get the content of the generated story.
-
-        :param user_input: The input from the user for which the story is generated.
-        :return: The content of the generated AI response.
+        Fetches the devotional content with cultural and linguistic adaptation.
+        :param user_input: User input for quiz choices.
+        :param language: Target language.
+        :return: AI-generated devotional.
         """
-        response = self.generate_devo(user_input)
-        if hasattr(response, 'content'):
-            return response.content
-        return str(response)  # Fallback if content is not available
+        response = self.generate_devo(user_input, language)
+        return response.content if hasattr(response, 'content') else str(response)
 
 
 # Example usage
 if __name__ == "__main__":
     writer = DevoWriter()
 
-    # Example user input from a quiz (will be replaced with dynamic input)
-    quiz_input = ["Korea", "new testament", "loneliness"]
+    # Example quiz input
+    quiz_input = ["Japan", "new testament", "anger"]
 
-    # Generate story/devo
-    generated_response = writer.get_response_content(quiz_input)
+    # Generate devotional in Korean
+    generated_response = writer.get_response_content(quiz_input, language="en")
 
-    print("Generated Story/Devo:", generated_response)
+    print("Generated Devotional:", generated_response)
