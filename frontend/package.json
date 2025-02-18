@@ -16,7 +16,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"cd ../backend && python3 manage.py runserver\" \"&& npm start\""
+    "dev": "concurrently \"cd ../backend && python3 manage.py runserver\" \" cd ../frontend && export NODE_OPTIONS=--openssl-legacy-provider && react-scripts start\""
 
   },
   "eslintConfig": {
