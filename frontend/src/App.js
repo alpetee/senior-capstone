@@ -1,10 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, createContext, useContext, useState} from 'react';
 import { Button, Badge } from '@mantine/core';
-
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
-const globalQuizState = {}; // Stores quiz answers
-console.log("beginning", globalQuizState);
+// const globalQuizState = {}; // Stores quiz answers
+const QuizContext = createContext();
+// Provide Context
+export function QuizProvider({ children }) {
+  const [quizState, setQuizState] = useState({});
+
+  const updateQuizState = (question, answer) => {
+    setQuizState((prev) => ({ ...prev, [question]: answer }));
+  };
+
+  return (
+    <QuizContext.Provider value={{ quizState, updateQuizState }}>
+      {children}
+    </QuizContext.Provider>
+  );
+}
+
+// Hook for consuming context
+export function useQuiz() {
+  return useContext(QuizContext);
+}
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -32,11 +50,12 @@ function LandingPage() {
 
 function Question1() {
   const navigate = useNavigate();
-  const [selectedChoice, setSelectedChoice] = useState(null); // Track selection
+  const [selectedChoice] = useState(null); // just for making it darker
+  const { updateQuizState } = useQuiz();
 
   const handleChoice = (choice) => {
-    setSelectedChoice(choice); // Saves selected choice to state
-    globalQuizState['q1'] = choice; // Stores choice in globalQuizState
+    updateQuizState("q1", choice); // Saves selected choice to state
+    // globalQuizState['q1'] = choice; // Stores choice in globalQuizState
     navigate('/q2');
   };
 
@@ -141,14 +160,12 @@ function ArchButton({ children, onClick }) {
 
 function Question2() {
   const navigate = useNavigate();
-  console.log("on q2", globalQuizState);
+  const { updateQuizState } = useQuiz();
 
   const handleChoice = (choice) => {
-    globalQuizState['q2'] = choice;
+    updateQuizState('q2', choice);
     navigate('/q3');
   };
-
-    console.log("2", globalQuizState);
 
   return (
     <div style={{
@@ -218,15 +235,17 @@ function Question2() {
 
 function Question3() {
   const navigate = useNavigate();
+  const { quizState, updateQuizState } = useQuiz();
 
   const handleChoice = async (choice) => {
-    globalQuizState['q3'] = choice;
+    // globalQuizState['q3'] = choice;
+      updateQuizState("q3", choice);
 
     try {
         await fetch('http://localhost:5000/api/submit/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(globalQuizState)
+        body: JSON.stringify(quizState) // idk whats goin in here
       });
     } catch (error) {
       console.error('Error submitting quiz:', error);
@@ -318,7 +337,8 @@ function Question3() {
 
 
 function Completed() {
-  const [devotional, setDevotional] = useState("Generating your devotional...");
+    const { quizState } = useQuiz();
+    const [devotional, setDevotional] = useState("Generating your devotional...");
 
   useEffect(() => {
     const fetchDevo = async () => {
@@ -326,11 +346,11 @@ function Completed() {
           const response = await fetch("http://localhost:8000/api/generate-devo/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(globalQuizState),
+          body: JSON.stringify(quizState),
         });
 
         const data = await response.json();
-        setDevotional(data.devo);
+        setDevotional(data.devo); // unresolved varible?
       } catch (error) {
         console.error("Error fetching devotional:", error);
         setDevotional("There was an error generating your devotional.");
@@ -338,35 +358,70 @@ function Completed() {
     };
 
     fetchDevo();
-  }, []);
+  }, [quizState]);
 
 
 
   return (
-    <div style={{ backgroundColor: "#DED1B9", minHeight: "100vh", padding: "50px", display: "flex", flexDirection: "column", alignItems: "left" }}>
-      <h1 style={{ color: "white" }}>
-        Here is your customized devo on <br />
-        <span style={{ color: "#B8A826" }}>{globalQuizState["q3"]}</span> through a{" "}
-        <span style={{ color: "#CC532E" }}>{globalQuizState["q1"]}</span> cultural lens.
-      </h1>
-      <p style={{ marginTop: "20px", color: "white", fontSize: "18px", maxWidth: "600px" }}>
-        {devotional}
-      </p>
+  <div style={{ backgroundColor: "#DED1B9", minHeight: "100vh", padding: "50px", display: "flex", flexDirection: "column", alignItems: "left" }}>
+    <h1 style={{ color: "white" }}>
+      here is your customized devo on <br />
+      <span style={{ color: "#B8A826" }}>{quizState["q3"]}</span> through a{" "}
+      <span style={{ color: "#CC532E" }}>{quizState["q1"]}</span> cultural lens.
+    </h1>
+       {/*<Badge*/}
+       {/*   sx={{*/}
+       {/*     backgroundColor: "#1F297A",*/}
+       {/* color: "white",*/}
+       {/* padding: "20px 30px",*/}
+       {/* borderRadius: "50px",*/}
+       {/* fontSize: "18px",*/}
+       {/* maxWidth: "600px",*/}
+       {/* marginTop: "20px",*/}
+       {/* alignItems: "center"*/}
+       {/*   }}*/}
+       {/* >*/}
+       {/*   1/3*/}
+       {/* </Badge>*/}
+    <div style={{
+        backgroundColor: "#1F297A",
+        color: "white",
+        padding: "20px 30px",
+        borderRadius: "50px",
+        fontSize: "18px",
+        maxWidth: "600px",
+        marginTop: "20px",
+        alignItems: "center"
+    }}>
+      {devotional}
     </div>
-  );
+  </div>
+);
 }
 
 function App() {
+    // return (
+    //     <Router>
+    //         <Routes>
+    //             <Route path="/" element={<LandingPage/>}/>
+    //             <Route path="/q1" element={<Question1 />} />
+    //     <Route path="/q2" element={<Question2 />} />
+    //     <Route path="/q3" element={<Question3 />} />
+    //     <Route path="/completed" element={<Completed />} />
+    //   </Routes>
+    // </Router>
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<LandingPage/>}/>
-                <Route path="/q1" element={<Question1 />} />
-        <Route path="/q2" element={<Question2 />} />
-        <Route path="/q3" element={<Question3 />} />
-        <Route path="/completed" element={<Completed />} />
-      </Routes>
-    </Router>
+    <QuizProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/q1" element={<Question1 />} />
+          <Route path="/q2" element={<Question2 />} />
+          <Route path="/q3" element={<Question3 />} />
+          <Route path="/completed" element={<Completed />} />
+        </Routes>
+      </Router>
+    </QuizProvider>
   );
 }
 
