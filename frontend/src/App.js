@@ -1,16 +1,17 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button, Badge } from '@mantine/core';
 
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 
 const globalQuizState = {}; // Stores quiz answers
+console.log("beginning", globalQuizState);
 
 function LandingPage() {
   const navigate = useNavigate();
 
   return (
     <div style={{ backgroundColor: '#1F297A', minHeight: '100vh', padding: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <h1 style={{ color: 'white' }}>YOUR DAILY BREAD</h1>
+      <h1 style={{ color: 'white', fontSize: 55 }}>YOUR DAILY BREAD</h1>
       <h2 style={{ color: 'white'}}> Fill out this quick survey to recieve a customized devotion catered specially to you and your context. </h2>
       <Button
           variant="filled"
@@ -18,9 +19,9 @@ function LandingPage() {
             radius="999px" // Fully rounded!
         sx={{
         backgroundColor: '#ECEAD8',
-        color: '#B8A926', // Green hex for the button text
-        fontWeight: 'bold', // Makes the button text bold
-        '&:hover': { backgroundColor: '#B8A926', color: '#ECEAD8' }, // Hover effect
+        color: '#B8A926',
+        fontWeight: 'bold', // button text bold
+        '&:hover': { backgroundColor: '#B8A926', color: '#ECEAD8' }, // color changes at hover
       }}
         onClick={() => navigate('/q1')}>
         take quiz
@@ -34,9 +35,9 @@ function Question1() {
   const [selectedChoice, setSelectedChoice] = useState(null); // Track selection
 
   const handleChoice = (choice) => {
-    setSelectedChoice(choice); // Save selected choice to state
-    globalQuizState['q1'] = choice; // Store choice in globalQuizState
-    navigate('/q2'); // Navigate to next question immediately
+    setSelectedChoice(choice); // Saves selected choice to state
+    globalQuizState['q1'] = choice; // Stores choice in globalQuizState
+    navigate('/q2');
   };
 
   return (
@@ -140,11 +141,14 @@ function ArchButton({ children, onClick }) {
 
 function Question2() {
   const navigate = useNavigate();
+  console.log("on q2", globalQuizState);
 
   const handleChoice = (choice) => {
     globalQuizState['q2'] = choice;
     navigate('/q3');
   };
+
+    console.log("2", globalQuizState);
 
   return (
     <div style={{
@@ -219,7 +223,7 @@ function Question3() {
     globalQuizState['q3'] = choice;
 
     try {
-      await fetch('/api/submit/', {
+        await fetch('http://localhost:5000/api/submit/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(globalQuizState)
@@ -314,11 +318,40 @@ function Question3() {
 
 
 function Completed() {
+  const [devotional, setDevotional] = useState("Generating your devotional...");
+
+  useEffect(() => {
+    const fetchDevo = async () => {
+      try {
+          const response = await fetch("http://localhost:8000/api/generate-devo/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(globalQuizState),
+        });
+
+        const data = await response.json();
+        setDevotional(data.devo);
+      } catch (error) {
+        console.error("Error fetching devotional:", error);
+        setDevotional("There was an error generating your devotional.");
+      }
+    };
+
+    fetchDevo();
+  }, []);
+
 
 
   return (
-    <div style={{ backgroundColor: '#DED1B9', minHeight: '100vh', padding: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <h1 style={{ color: 'white' }}>here is your customized devo on 'quiz selection 3' through a 'quiz selection 1' cultural lense</h1>
+    <div style={{ backgroundColor: "#DED1B9", minHeight: "100vh", padding: "50px", display: "flex", flexDirection: "column", alignItems: "left" }}>
+      <h1 style={{ color: "white" }}>
+        Here is your customized devo on <br />
+        <span style={{ color: "#B8A826" }}>{globalQuizState["q3"]}</span> through a{" "}
+        <span style={{ color: "#CC532E" }}>{globalQuizState["q1"]}</span> cultural lens.
+      </h1>
+      <p style={{ marginTop: "20px", color: "white", fontSize: "18px", maxWidth: "600px" }}>
+        {devotional}
+      </p>
     </div>
   );
 }
@@ -337,4 +370,5 @@ function App() {
   );
 }
 
-export default App;
+export { Completed }; // Named export
+export default App; // Default export

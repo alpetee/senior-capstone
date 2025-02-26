@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import generate_devo, homepage  # Import the views
+from .views import generate_devo, homepage, submit_quiz
 
+print("QUIZ/URLS PAGEEEEE") # g3ettng in here yay
 urlpatterns = [
-    path('generate-devo/', generate_devo, name='generate_devo'),
-    path('api/homepage/', homepage, name='homepage'),  # Endpoint to fetch the homepage message
+    path("homepage/", homepage, name="homepage"),
+    path("submit/", submit_quiz, name="submit_quiz"),  # Matches `POST /api/submit/`
+    path("generate-devo/", generate_devo, name="generate_devo"),  # Matches `GET /api/generate-devo/`
 ]
