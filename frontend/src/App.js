@@ -196,7 +196,7 @@ function Question2() {
         alignItems: 'flex-end', // Push buttons lower
         paddingBottom: '10px', // Adjusts spacing above the badge
       }}>
-        {['NEW \nTESTAMENT', 'PARELLELS \nBETWEEN \nTHE TWO', 'OLD \nTESTAMENT'].map((option) => (
+        {['OLD \nTESTAMENT', 'PARELLELS \nBETWEEN \nTHE TWO', 'NEW \nTESTAMENT'].map((option) => (
       <ArchButton key={option} onClick={() => handleChoice(option)}>
         {option.split('\n').map((line, index) => (
           <React.Fragment key={index}>
@@ -337,66 +337,88 @@ function Question3() {
 
 
 function Completed() {
-    const { quizState } = useQuiz();
+    const {quizState} = useQuiz();
     const [devotional, setDevotional] = useState("Generating your devotional...");
 
-  useEffect(() => {
-    const fetchDevo = async () => {
-      try {
-          const response = await fetch("http://localhost:8000/api/generate-devo/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(quizState),
-        });
+    useEffect(() => {
+        const fetchDevo = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/api/generate-devo/", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(quizState),
+                });
 
-        const data = await response.json();
-        setDevotional(data.devo); // unresolved varible?
-      } catch (error) {
-        console.error("Error fetching devotional:", error);
-        setDevotional("There was an error generating your devotional.");
-      }
-    };
+                const data = await response.json();
+                setDevotional(data.devo); // unresolved varible?
+            } catch (error) {
+                console.error("Error fetching devotional:", error);
+                setDevotional("There was an error generating your devotional.");
+            }
+        };
 
-    fetchDevo();
-  }, [quizState]);
+        fetchDevo();
+    }, [quizState]);
 
 
+    return (
+        <div
+            style={{
+                backgroundColor: "#DED1B9",
+                minHeight: "100vh",
+                padding: "50px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+            }}
+        >
+            <h1 style={{color: "white"}}>
+                here is your customized devo on <br/>
+                <span style={{color: "#B8A826"}}>{quizState["q3"]}</span> through a{" "}
+                <span style={{color: "#CC532E"}}>{quizState["q1"]}</span> cultural lens.
+            </h1>
 
-  return (
-  <div style={{ backgroundColor: "#DED1B9", minHeight: "100vh", padding: "50px", display: "flex", flexDirection: "column", alignItems: "left" }}>
-    <h1 style={{ color: "white" }}>
-      here is your customized devo on <br />
-      <span style={{ color: "#B8A826" }}>{quizState["q3"]}</span> through a{" "}
-      <span style={{ color: "#CC532E" }}>{quizState["q1"]}</span> cultural lens.
-    </h1>
-       {/*<Badge*/}
-       {/*   sx={{*/}
-       {/*     backgroundColor: "#1F297A",*/}
-       {/* color: "white",*/}
-       {/* padding: "20px 30px",*/}
-       {/* borderRadius: "50px",*/}
-       {/* fontSize: "18px",*/}
-       {/* maxWidth: "600px",*/}
-       {/* marginTop: "20px",*/}
-       {/* alignItems: "center"*/}
-       {/*   }}*/}
-       {/* >*/}
-       {/*   1/3*/}
-       {/* </Badge>*/}
-    <div style={{
-        backgroundColor: "#1F297A",
-        color: "white",
-        padding: "20px 30px",
-        borderRadius: "50px",
-        fontSize: "18px",
-        maxWidth: "600px",
-        marginTop: "20px",
-        alignItems: "center"
-    }}>
-      {devotional}
-    </div>
-  </div>
-);
+            <div
+                style={{
+                    backgroundColor: "#1F297A",
+                    color: "white",
+                    padding: "20px 30px",
+                    borderRadius: "9999px", // Fully rounded edges
+                    fontSize: "18px",
+                    height: "180vh", // Set to half of the page height
+                    width: "188vh", // Make it fill the width
+                    display: "flex",
+                    flexDirection: "column", // Stack content vertically
+                    justifyContent: "space-between", // Distribute space between the content and the button
+                    alignItems: "center", // Center content horizontally
+                    textAlign: "center", // Ensure the text is centered
+                    wordWrap: "break-word", // Ensure text wraps if it overflows
+                    overflow: "hidden", // Hide overflow if the text exceeds
+                    boxSizing: "border-box", // Ensure padding doesn't push content outside
+                    marginTop: "45px", // Buffer above curve
+                    paddingTop: "220px", // Additional buffer space on top
+                    paddingRight: "220px",
+                    paddingLeft: "220px",
+                    paddingBottom: "220px",
+                }}
+            >
+                {devotional}
+                <Button
+                    variant="filled"
+                    size="lg"
+                    radius="999px" // Fully rounded!
+                    sx={{
+                        backgroundColor: '#B8A926',
+                        color: '#ECEAD8',
+                        fontWeight: 'bold', // Button text bold
+                        '&:hover': {backgroundColor: '#ECEAD8', color: '#B8A926'}, // Color changes at hover
+                    }}
+                >
+                    save
+                </Button>
+            </div>
+        </div>
+    );
 }
 
 function App() {
@@ -411,16 +433,16 @@ function App() {
     //   </Routes>
     // </Router>
     return (
-    <QuizProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/q1" element={<Question1 />} />
-          <Route path="/q2" element={<Question2 />} />
-          <Route path="/q3" element={<Question3 />} />
-          <Route path="/completed" element={<Completed />} />
-        </Routes>
-      </Router>
+        <QuizProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<LandingPage/>}/>
+                    <Route path="/q1" element={<Question1/>}/>
+                    <Route path="/q2" element={<Question2/>}/>
+                    <Route path="/q3" element={<Question3/>}/>
+                    <Route path="/completed" element={<Completed/>}/>
+                </Routes>
+            </Router>
     </QuizProvider>
   );
 }
