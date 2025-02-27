@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import generate_devo, homepage, submit_quiz
 
+
 print("QUIZ/URLS PAGEEEEE") # g3ettng in here yay
 urlpatterns = [
     path("homepage/", homepage, name="homepage"),
