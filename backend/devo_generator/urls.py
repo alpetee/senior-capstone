@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from quiz import views
-#from backend.quiz.views import homepage  # Import the homepage view from quiz app
-
+from quiz import views  # Importing views from quiz app
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/homepage/", views.homepage, name="homepage"),  # Keep API endpoint
-    path("", views.homepage, name="root-homepage"),  # This will serve the homepage at / (as the root)
-    path("quiz/", include("quiz.urls")),
+
+    # Direct API endpoints from quiz views
+    path("api/homepage/", views.homepage, name="homepage"),  # API response for frontend connection
+    path("", views.homepage, name="root-homepage"),  # Serve homepage at root
+
+    # Include app-level URLs for the quiz app
+    path("api/", include("quiz.urls")),  # Now all quiz URLs are prefixed with /api/
 ]
