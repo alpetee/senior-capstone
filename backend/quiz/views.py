@@ -17,7 +17,7 @@ import getpass
 # # Headers for Scripture API
 # SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
 
-
+# API KEYS GO HEREEE
 
 # Global quiz state (this can be replaced with a database if needed)
 globalQuizState = {}
@@ -231,16 +231,17 @@ def generate_devo(request):
         print("Retrieved quizState!!!:", quizState)  # Debugging output
 
         # Define necessary variables for the devotional
-        topic = 'lonliness' # quizState.get('q3')
-        culture = 'Japan' #quizState.get('q1')
+        topic = 'TIREDNESS' # quizState.get('q3')
+        culture = 'MEXICO' #quizState.get('q1')
         section = quizState.get('q2')
 
         # System template for generating the devotional
         system_template = (
             "You are a devotional writer skilled in cultural adaptation."
             "Write a devotional on the following theme: {topic} noting that the listener is from {culture}."
+            "Although you are writing through the lense of {culture} culture, don't make it explicit."
             "Include {topic} in the title."
-            "Include a relevant Bible verse from {section} of the bible. Ensure it resonates with the topic {topic} and {culture} culture."
+            "YOU MUST Include a relevant Bible verse from {section} of the bible, ensuring it resonates with the topic {topic}."
         )
 
         # Set up the prompt for the AI model
@@ -264,9 +265,30 @@ def generate_devo(request):
             response = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
         elif isinstance(response, AIMessage):  # if response is a single message
             response = response.content
-
+        language = get_language(culture)
+        print(language)
+        # response = translate_text(response, language)
         # Return the devotional as a JSON response
         return JsonResponse({"devo": response})
 
     # Handle case where the request is not a POST
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
+# for translating: not currently working lol
+def get_language(culture):
+    if culture == 'LATIN/CENTRAL AMERICA':
+        return 'es'  # Spanish
+    elif culture == 'KOREA':
+        return 'ko'  # Korean
+    elif culture == 'JAPAN':
+        return 'ja'  # Japanese
+    else:
+        return 'en'  # Default to English
+
+def translate_text(self, text, target_lang):
+        """Translates text using Google Translator."""
+        text = str(text)
+        MAX_CHARS = 5000
+        chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
+        translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
+        return " ".join(translated_chunks)
