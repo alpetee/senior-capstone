@@ -125,3 +125,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# CORS Settings (for development)
+CORS_ALLOW_CREDENTIALS = True
+
+# Session Settings
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True  # If using HTTPS
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True  # If using HTTPS

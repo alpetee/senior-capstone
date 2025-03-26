@@ -149,7 +149,7 @@ function Question1() {
               justifyContent: 'center',
               alignContent: 'center',
       }}>
-        {['JAPAN', 'KOREA', 'LATIN/CENTRAL\n AMERICA', 'NORTH AMERICA'].map((option) => (
+        {['JAPAN', 'KOREA', 'MEXICO/CENTRAL\n AMERICA', 'NORTH AMERICA'].map((option) => (
           <Button
             key={option}
             variant="filled"
@@ -330,25 +330,59 @@ function Question2() {
 function Question3() {
   const navigate = useNavigate();
   const { quizState, updateQuizState } = useQuiz();
-  const [selectedChoice, setSelectedChoice] = useState(null); // Add state
+  const [selectedChoice, setSelectedChoice] = useState(null);
+
+  // Debug current quiz state
+  useEffect(() => {
+    console.log("Current quiz state in Question3:", quizState);
+  }, [quizState]);
 
   const handleChoice = async (choice) => {
-    setSelectedChoice(choice); // Update state when user selects an option
+    // Update local state immediately
+    setSelectedChoice(choice);
+
+    // Create the complete quiz state object
+    const completeQuizState = {
+      ...quizState,  // Spread existing state (should include q1 and q2)
+      q3: choice     // Add the current selection
+    };
+
+    // Update global quiz state
     updateQuizState("q3", choice);
 
+    console.log("Full quiz state being sent:", completeQuizState);
+
     try {
-      await fetch("http://localhost:5000/api/submit/", {
+      const response = await fetch("http://localhost:8000/api/submit_quiz/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...quizState, q3: choice }), // Ensure updated state is sent
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken") // Add CSRF token if needed
+        },
+        body: JSON.stringify(completeQuizState),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Backend response:", data);
+
     } catch (error) {
-      console.error("Error submitting quiz:", error);
+      console.error("Submission error:", error);
+      // Optionally show error to user
     }
 
     navigate("/completed");
   };
 
+  // Add CSRF token helper if needed
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
   return (
     <div
       style={{
@@ -439,29 +473,59 @@ function Question3() {
 }
 
 function Completed() {
-    const {quizState} = useQuiz();
-    const [devotional, setDevotional] = useState("Generating your devotional..."); // text while there is no devotional response
+    const { quizState } = useQuiz();
+    const [devotional, setDevotional] = useState("Generating your devotional...");
 
     useEffect(() => {
         const fetchDevo = async () => {
             try {
+                console.log("Sending quiz state to backend:", quizState); // Debug log
+
                 const response = await fetch("http://localhost:8000/api/generate-devo/", {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify(quizState),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken"), // Add CSRF token
+                    },
+                    body: JSON.stringify({
+                        quizState: quizState,
+                    }),
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                setDevotional(data.devo); // unresolved varible?
+                console.log("Received devotional:", data); // Debug log
+                setDevotional(data.devo || "No devotional content received");
+
             } catch (error) {
                 console.error("Error fetching devotional:", error);
-                setDevotional("There was an error generating your devotional.");
+                setDevotional(`There was an error generating your devotional: ${error.message}`);
             }
         };
 
         fetchDevo();
     }, [quizState]);
 
+    // Add this helper function for CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // ... rest of your component code
 
     return (
         <div
@@ -529,62 +593,6 @@ function Completed() {
                 </Button>
             </div>
         </div>
-        // <div
-        //     style={{
-        //         backgroundColor: "#DED1B9",
-        //         minHeight: "100vh",
-        //         padding: "50px",
-        //         display: "flex",
-        //         flexDirection: "column",
-        //         alignItems: "flex-start",
-        //     }}
-        // >
-        //     <h1 style={{color: "white"}}>
-        //         here is your customized devo on <br/>
-        //         <span style={{color: "#B8A826"}}>{quizState["q3"]}</span> through a{" "}
-        //         <span style={{color: "#CC532E"}}>{quizState["q1"]}</span> cultural lens.
-        //     </h1>
-        //
-        //     <div
-        //         style={{
-        //             backgroundColor: "#1F297A",
-        //             color: "white",
-        //             padding: "20px 30px",
-        //             borderRadius: "9999px", // Fully rounded edges
-        //             fontSize: "15px",
-        //             height: "180vh", // Set to half of the page height
-        //             width: "188vh", // Make it fill the width
-        //             display: "flex",
-        //             flexDirection: "column", // Stack content vertically
-        //             justifyContent: "space-between", // Distribute space between the content and the button
-        //             alignItems: "center", // Center content horizontally
-        //             textAlign: "center", // Ensure the text is centered
-        //             wordWrap: "break-word", // Ensure text wraps if it overflows
-        //             overflow: "hidden", // Hide overflow if the text exceeds
-        //             boxSizing: "border-box", // Ensure padding doesn't push content outside
-        //             marginTop: "45px", // Buffer above curve
-        //             paddingTop: "220px", // Additional buffer space on top
-        //             paddingRight: "220px",
-        //             paddingLeft: "220px",
-        //             paddingBottom: "220px",
-        //         }}
-        //     >
-        //         {devotional}
-        //         <Button
-        //             variant="filled"
-        //             size="lg"
-        //             radius="999px" // Fully rounded!
-        //             sx={{
-        //                 backgroundColor: '#B8A926',
-        //                 color: '#ECEAD8',
-        //                 fontWeight: 'bold', // Button text bold
-        //                 '&:hover': {backgroundColor: '#ECEAD8', color: '#B8A926'}, // Color changes at hover
-        //             }}
-        //         >
-        //             save
-        //         </Button>
-        //     </div>
-        // </div>
     );
 }
 
