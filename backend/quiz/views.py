@@ -13,15 +13,8 @@ from dotenv import load_dotenv
 
 
 
-# API Keys
-# SCRIPTURE_API_KEY = os.getenv("SCRIPTURE_API_KEY") or getpass.getpass("Enter API key for Scripture API: ")
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or getpass.getpass("Enter API key for OpenAI: ")
-# # Headers for Scripture API
-# SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
-# Load variables from .env
+# API Keys from enviornment
 load_dotenv()
-
-# Get API key from environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 SCRIPTURE_API_KEY = os.getenv("SCRIPTURE_API_KEY")
 SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
