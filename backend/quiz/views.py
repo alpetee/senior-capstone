@@ -1,14 +1,10 @@
 import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from langchain.chat_models import ChatOpenAI
-from langchain_core.messages import AIMessage
-from langchain_core.prompts import ChatPromptTemplate
-from deep_translator import GoogleTranslator
 import json
 import os
-import getpass
 from dotenv import load_dotenv
+
 
 
 
@@ -32,10 +28,13 @@ globalQuizState = {}
 
 def homepage(request):
     # Return a JSON response with the homepage message
+    print("=== Homepage View Triggered ===")
+
     return JsonResponse({"message": "Homepage welcome"})
 
 class DevoWriter:
     def __init__(self):
+        from langchain.chat_models import ChatOpenAI
         self.model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
 
     def fetch_bible_verse(self, passage: str):
@@ -48,59 +47,62 @@ class DevoWriter:
 
     def translate_text(self, text, target_lang):
         """Translates text using Google Translator."""
+        from deep_translator import GoogleTranslator
         text = str(text)
         MAX_CHARS = 5000
         chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
         translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
         return " ".join(translated_chunks)
 
-    def generate_devo(self, request, language="en"):
-        """Generates a devotional based on quiz state."""
-        print("in top devo generator:")
-        if request.method == "POST":
-            quizState = request.session.get('quizState', {})  # Retrieve from sessions
-            print("Retrieved quizState!!!:", quizState)  # Debugging output
-        #     writer = DevoWriter()
-        #     devotional = writer.generate_devo(quizState, language="en")
-        #     return JsonResponse({"devo": devotional})
-        # return JsonResponse({"error": "Invalid request method"}, status=405)
-
-        topic = "LONLINESS" # quizState.get('q3')
-        culture = "MEXICO"# quizState.get('q1')
-        section = quizState.get('q2')
-        # if quiz_state.get('q2', '') == ('paralells between th two":'
-        #                                 '')
-
-        system_template = (
-            "You are a devotional writer skilled in cultural adaptation."
-            "Write a devotional on the following theme: {topic} noting that the listener is from {culture}."
-            "Include {topic} in the title."
-            "Include a relevant Bible verse from {section} of the bible. Ensure it resonates with the topic {topic} and {culture} culture."
-        )
-
-        prompt_template = ChatPromptTemplate.from_messages(
-            [("system", system_template), ("user", "{text}")]
-        )
-
-        prompt = prompt_template.invoke({
-            "topic": topic,
-            "culture": culture,
-            "section": section,
-            "text": "Write a devotional."
-        })
-
-        response = self.model.invoke(prompt)
-        # Handle both single AIMessage and list of AIMessage objects
-        if isinstance(response, list):  # Case where response is a list of messages
-            # Extract content from each message
-            response = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
-        elif isinstance(response, AIMessage):  # Case where response is a single message
-            response = response.content
-
-
-        if language != "en":
-            response = self.translate_text(response, language)
-        return response
+    # def generate_devo(self, request, language="en"):
+    #     from langchain_core.prompts import ChatPromptTemplate
+    #     from langchain_core.messages import AIMessage
+    #     """Generates a devotional based on quiz state."""
+    #     print("in top devo generator:")
+    #     if request.method == "POST":
+    #         quizState = request.session.get('quizState', {})  # Retrieve from sessions
+    #         print("Retrieved quizState!!!:", quizState)  # Debugging output
+    #     #     writer = DevoWriter()
+    #     #     devotional = writer.generate_devo(quizState, language="en")
+    #     #     return JsonResponse({"devo": devotional})
+    #     # return JsonResponse({"error": "Invalid request method"}, status=405)
+    #
+    #     topic = "LONLINESS" # quizState.get('q3')
+    #     culture = "MEXICO"# quizState.get('q1')
+    #     section = quizState.get('q2')
+    #     # if quiz_state.get('q2', '') == ('paralells between th two":'
+    #     #                                 '')
+    #
+    #     system_template = (
+    #         "You are a devotional writer skilled in cultural adaptation."
+    #         "Write a devotional on the following theme: {topic} noting that the listener is from {culture}."
+    #         "Include {topic} in the title."
+    #         "Include a relevant Bible verse from {section} of the bible. Ensure it resonates with the topic {topic} and {culture} culture."
+    #     )
+    #
+    #     prompt_template = ChatPromptTemplate.from_messages(
+    #         [("system", system_template), ("user", "{text}")]
+    #     )
+    #
+    #     prompt = prompt_template.invoke({
+    #         "topic": topic,
+    #         "culture": culture,
+    #         "section": section,
+    #         "text": "Write a devotional."
+    #     })
+    #
+    #     response = self.model.invoke(prompt)
+    #     # Handle both single AIMessage and list of AIMessage objects
+    #     if isinstance(response, list):  # Case where response is a list of messages
+    #         # Extract content from each message
+    #         response = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
+    #     elif isinstance(response, AIMessage):  # Case where response is a single message
+    #         response = response.content
+    #
+    #
+    #     if language != "en":
+    #         response = self.translate_text(response, language)
+    #     return response
 
 
 """
@@ -133,15 +135,96 @@ def submit_quiz(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 @csrf_exempt
+# def generate_devo(request):
+#     from langchain.chat_models import ChatOpenAI
+#     from langchain_core.prompts import ChatPromptTemplate
+#     from langchain_core.messages import AIMessage
+#
+#
+#
+#     """Generates a devotional based on quiz state."""
+#     print("\n=== GENERATE_DEVO VIEW TRIGGERED ===")  # Debug
+#
+#     if request.method == "POST":
+#         try:
+#             # Print raw request data for debugging
+#             print("Raw request body:", request.body)
+#
+#             # Parse JSON data
+#             data = json.loads(request.body)
+#             print("Parsed JSON data:", data)
+#
+#             quiz_state = data.get('quizState', {})
+#             print("Quiz state received:", quiz_state)
+#
+#             # Get values with defaults
+#             topic = quiz_state.get('q3', 'DEFAULT_TOPIC')
+#             culture = quiz_state.get('q1', 'DEFAULT_CULTURE')
+#             section = quiz_state.get('q2', 'DEFAULT_SECTION')
+#
+#             print(f"Generating devotional for: {topic}, {culture}, {section}")  # Debug
+#
+#             # System template
+#             system_template = (
+#                 "You are a devotional writer skilled in cultural adaptation.\n"
+#                 "Write a devotional on: {topic} for someone from {culture}.\n"
+#                 "Include '{topic}' in the title.\n"
+#                 "Include a relevant Bible verse from {section}."
+#             )
+#
+#             prompt_template = ChatPromptTemplate.from_messages([
+#                 ("system", system_template),
+#                 ("user", "Write a devotional.")
+#             ])
+#
+#             prompt = prompt_template.invoke({
+#                 "topic": topic,
+#                 "culture": culture,
+#                 "section": section,
+#             })
+#
+#             # Generate response
+#             model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
+#             response = model.invoke(prompt)
+#
+#             # Handle response
+#             if isinstance(response, list):
+#                 content = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
+#             elif isinstance(response, AIMessage):
+#                 content = response.content
+#             else:
+#                 content = str(response)
+#
+#             print("Generated devotional:", content)  # Debug
+#
+#             return JsonResponse({
+#                 "devo": content,
+#                 "status": "success",
+#                 "quiz_state_received": quiz_state
+#             })
+#
+#
+#         except Exception as e:
+#             print("Error in generate_devo:", str(e))  # Debug
+#             return JsonResponse({
+#                 "error": str(e),
+#                 "status": "error"
+#             }, status=500)
+#
+#     return JsonResponse({
+#         "error": "Invalid request method",
+#         "status": "error"
+#     }, status=405)
 def generate_devo(request):
+    from langchain.chat_models import ChatOpenAI
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.messages import AIMessage
+
     """Generates a devotional based on quiz state."""
     print("\n=== GENERATE_DEVO VIEW TRIGGERED ===")  # Debug
 
     if request.method == "POST":
         try:
-            # Print raw request data for debugging
-            print("Raw request body:", request.body)
-
             # Parse JSON data
             data = json.loads(request.body)
             print("Parsed JSON data:", data)
@@ -160,8 +243,10 @@ def generate_devo(request):
             system_template = (
                 "You are a devotional writer skilled in cultural adaptation.\n"
                 "Write a devotional on: {topic} for someone from {culture}.\n"
-                "Include '{topic}' in the title.\n"
-                "Include a relevant Bible verse from {section}."
+                "Include '{topic}' in the title. this should be the first line.\n"
+                "Include a relevant Bible verse from {section}. this should be the SECOND line.\n"
+                "include a relevant prauer. this should be the last line.\n"
+                "format it like this: Title newline bible verse newline devotional new line Prayer: prayer.\n"
             )
 
             prompt_template = ChatPromptTemplate.from_messages([
@@ -179,7 +264,7 @@ def generate_devo(request):
             model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
             response = model.invoke(prompt)
 
-            # Handle response
+            # Handle response and split the content into structured components
             if isinstance(response, list):
                 content = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
             elif isinstance(response, AIMessage):
@@ -187,10 +272,30 @@ def generate_devo(request):
             else:
                 content = str(response)
 
-            print("Generated devotional:", content)  # Debug
+            print("Generated devo!!! ac content: ", content)
+            # Assuming the content follows a format like:
+            # Title, Verse, Body, Prayer
+            lines = content.split("\n")
 
+            # Remove '**' from the title and verse
+            title = lines[0].replace("**", "")  # First line is the title
+
+            # Verse (second line) without '**'
+            verse = lines[1].replace("**", "")  # Second line is the verse
+
+            # Body: everything between the title and prayer
+            body = "\n".join(lines[2:-2])  # Body content (excluding the title, verse, and prayer)
+
+            # Prayer: combine the second-to-last line "Prayer:" with the last line (the actual prayer)
+            prayer = f"{lines[-2]} {lines[-1]}".replace("**",
+                                                        "")  # Combine "Prayer:" label and prayer text, remove '**'
+
+            # Return structured data
             return JsonResponse({
-                "devo": content,
+                "title_devo": title,
+                "verse_devo": verse,
+                "content_devo": body,
+                "prayer_devo": prayer,
                 "status": "success",
                 "quiz_state_received": quiz_state
             })
@@ -220,6 +325,8 @@ def get_language(culture):
 
 def translate_text(self, text, target_lang):
         """Translates text using Google Translator."""
+        from deep_translator import GoogleTranslator
+
         text = str(text)
         MAX_CHARS = 5000
         chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
