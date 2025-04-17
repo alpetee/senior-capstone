@@ -3,6 +3,8 @@ import { Button, Badge, Grid, Flex, Container, Title, Text } from '@mantine/core
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
+
 const QuizContext = createContext();
 
 export function QuizProvider({ children }) {
@@ -323,7 +325,7 @@ function Question3() {
     console.log("Full quiz state being sent:", completeQuizState);
 
     try {
-      const response = await fetch("http://localhost:8000/api/submit_quiz/", {
+      const response = await fetch(API_URL + "/api/submit_quiz/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -449,7 +451,7 @@ function Completed() {
             try {
                 console.log("Sending quiz state to backend:", quizState);
 
-                const response = await fetch("http://localhost:8000/api/generate-devo/", {
+                const response = await fetch(API_URL + "api/generate-devo/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
