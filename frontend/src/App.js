@@ -3,7 +3,7 @@ import { Button, Badge, Grid, Flex, Container, Title, Text } from '@mantine/core
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 
-const API_URL = ;
+const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 const QuizContext = createContext();
 
