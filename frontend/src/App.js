@@ -3,7 +3,7 @@ import { Button, Badge, Grid, Flex, Container, Title, Text } from '@mantine/core
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 
-const API_URL = process.env.REACT_APP_API_BASE_URL;
+const API_URL = ;
 
 const QuizContext = createContext();
 
@@ -325,7 +325,7 @@ function Question3() {
     console.log("Full quiz state being sent:", completeQuizState);
 
     try {
-      const response = await fetch(API_URL + "/api/submit_quiz/", {
+      const response = await fetch(API_URL + "/api/submit/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
