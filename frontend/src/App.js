@@ -332,6 +332,7 @@ function Question3() {
           "X-CSRFToken": getCookie("csrftoken")
         },
         body: JSON.stringify(completeQuizState),
+          mode: 'no-cors'
       });
 
       if (!response.ok) {
@@ -458,6 +459,7 @@ function Completed() {
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify(quizState),
+                    mode: 'no-cors',
                 });
 
                 if (!response.ok) {
