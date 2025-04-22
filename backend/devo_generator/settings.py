@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'devo_generator.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-c
+
 
 
 # Password validation
@@ -120,7 +120,7 @@ STATIC_URL = 'static/' # TODO: use s3?
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = 'django.db.backends.dummy'
 # CORS Settings (for development)
 CORS_ALLOW_CREDENTIALS = True
 
