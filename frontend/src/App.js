@@ -328,11 +328,14 @@ function Question3() {
       const response = await fetch(API_URL + "/api/submit/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken")
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "Accept-Encoding": "deflate, gzip",
+            "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+          // "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify(completeQuizState),
-          mode: 'no-cors'
+        body: JSON.stringify(completeQuizState)
       });
 
       if (!response.ok) {
@@ -456,10 +459,13 @@ function Completed() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Accept": "*/*",
+                        "Accept-Encoding": "deflate, gzip",
+                        "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+                        // "X-CSRFToken": getCookie("csrftoken"),
                     },
                     body: JSON.stringify(quizState),
-                    mode: 'no-cors',
                 });
 
                 if (!response.ok) {
