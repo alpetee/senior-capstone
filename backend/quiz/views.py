@@ -17,15 +17,18 @@ SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
 # Global quiz state (this can be replaced with a database if needed)
 globalQuizState = {}
 
+
 def homepage(request):
     # Return a JSON response with the homepage message
     print("=== Homepage View Triggered ===")
 
     return JsonResponse({"message": "Homepage welcome"})
 
+
 class DevoWriter:
     def __init__(self):
         from langchain.chat_models import ChatOpenAI
+
         self.model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
 
     def fetch_bible_verse(self, passage: str):
@@ -39,16 +42,22 @@ class DevoWriter:
     def translate_text(self, text, target_lang):
         """Translates text using Google Translator."""
         from deep_translator import GoogleTranslator
+
         text = str(text)
         MAX_CHARS = 5000
-        chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
-        translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
+        chunks = [text[i : i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
+        translated_chunks = [
+            GoogleTranslator(source="auto", target=target_lang).translate(chunk)
+            for chunk in chunks
+        ]
         return " ".join(translated_chunks)
 
 
 """
 for testiing other formatting: 
 """
+
+
 #
 @csrf_exempt
 def submit_quiz(request):
@@ -63,11 +72,13 @@ def submit_quiz(request):
             print("Parsed JSON data:", data)  # Debugging
 
             # Store in session
-            request.session['quizState'] = data
+            request.session["quizState"] = data
             request.session.modified = True
-            print("Session after update:", request.session['quizState'])  # Debugging
+            print("Session after update:", request.session["quizState"])  # Debugging
 
-            return JsonResponse({"message": "Quiz submitted successfully", "data": data})
+            return JsonResponse(
+                {"message": "Quiz submitted successfully", "data": data}
+            )
 
         except Exception as e:
             print("Error:", str(e))  # Debugging
@@ -75,8 +86,8 @@ def submit_quiz(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-@csrf_exempt
 
+@csrf_exempt
 def generate_devo(request):
     from langchain.chat_models import ChatOpenAI
     from langchain_core.prompts import ChatPromptTemplate
@@ -91,13 +102,13 @@ def generate_devo(request):
             data = json.loads(request.body)
             print("Parsed JSON data:", data)
 
-            quiz_state = data.get('quizState', {})
+            quiz_state = data.get("quizState", {})
             print("Quiz state received:", quiz_state)
 
             # Get values with defaults
-            topic = quiz_state.get('q3', 'DEFAULT_TOPIC')
-            culture = quiz_state.get('q1', 'DEFAULT_CULTURE')
-            section = quiz_state.get('q2', 'DEFAULT_SECTION')
+            topic = quiz_state.get("q3", "DEFAULT_TOPIC")
+            culture = quiz_state.get("q1", "DEFAULT_CULTURE")
+            section = quiz_state.get("q2", "DEFAULT_SECTION")
 
             print(f"Generating devotional for: {topic}, {culture}, {section}")  # Debug
 
@@ -111,16 +122,17 @@ def generate_devo(request):
                 "format it like this: Title newline bible verse newline devotional new line Prayer: prayer.\n"
             )
 
-            prompt_template = ChatPromptTemplate.from_messages([
-                ("system", system_template),
-                ("user", "Write a devotional.")
-            ])
+            prompt_template = ChatPromptTemplate.from_messages(
+                [("system", system_template), ("user", "Write a devotional.")]
+            )
 
-            prompt = prompt_template.invoke({
-                "topic": topic,
-                "culture": culture,
-                "section": section,
-            })
+            prompt = prompt_template.invoke(
+                {
+                    "topic": topic,
+                    "culture": culture,
+                    "section": section,
+                }
+            )
 
             # Generate response
             model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
@@ -128,7 +140,9 @@ def generate_devo(request):
 
             # Handle response and split the content into structured components
             if isinstance(response, list):
-                content = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
+                content = "\n".join(
+                    [msg.content for msg in response if isinstance(msg, AIMessage)]
+                )
             elif isinstance(response, AIMessage):
                 content = response.content
             else:
@@ -146,51 +160,57 @@ def generate_devo(request):
             verse = lines[1].replace("**", "")  # Second line is the verse
 
             # Body: everything between the title and prayer
-            body = "\n".join(lines[2:-2])  # Body content (excluding the title, verse, and prayer)
+            body = "\n".join(
+                lines[2:-2]
+            )  # Body content (excluding the title, verse, and prayer)
 
             # Prayer: combine the second-to-last line "Prayer:" with the last line (the actual prayer)
-            prayer = f"{lines[-2]} {lines[-1]}".replace("**",
-                                                        "")  # Combine "Prayer:" label and prayer text, remove '**'
+            prayer = f"{lines[-2]} {lines[-1]}".replace(
+                "**", ""
+            )  # Combine "Prayer:" label and prayer text, remove '**'
 
             # Return structured data
-            return JsonResponse({
-                "title_devo": title,
-                "verse_devo": verse,
-                "content_devo": body,
-                "prayer_devo": prayer,
-                "status": "success",
-                "quiz_state_received": quiz_state
-            })
+            return JsonResponse(
+                {
+                    "title_devo": title,
+                    "verse_devo": verse,
+                    "content_devo": body,
+                    "prayer_devo": prayer,
+                    "status": "success",
+                    "quiz_state_received": quiz_state,
+                }
+            )
 
         except Exception as e:
             print("Error in generate_devo:", str(e))  # Debug
-            return JsonResponse({
-                "error": str(e),
-                "status": "error"
-            }, status=500)
+            return JsonResponse({"error": str(e), "status": "error"}, status=500)
 
-    return JsonResponse({
-        "error": "Invalid request method",
-        "status": "error"
-    }, status=405)
+    return JsonResponse(
+        {"error": "Invalid request method", "status": "error"}, status=405
+    )
+
 
 # for translating: not currently working lol
 def get_language(culture):
-    if culture == 'LATIN/CENTRAL AMERICA':
-        return 'es'  # Spanish
-    elif culture == 'KOREA':
-        return 'ko'  # Korean
-    elif culture == 'JAPAN':
-        return 'ja'  # Japanese
+    if culture == "LATIN/CENTRAL AMERICA":
+        return "es"  # Spanish
+    elif culture == "KOREA":
+        return "ko"  # Korean
+    elif culture == "JAPAN":
+        return "ja"  # Japanese
     else:
-        return 'en'  # Default to English
+        return "en"  # Default to English
+
 
 def translate_text(self, text, target_lang):
-        """Translates text using Google Translator."""
-        from deep_translator import GoogleTranslator
+    """Translates text using Google Translator."""
+    from deep_translator import GoogleTranslator
 
-        text = str(text)
-        MAX_CHARS = 5000
-        chunks = [text[i:i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
-        translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
-        return " ".join(translated_chunks)
+    text = str(text)
+    MAX_CHARS = 5000
+    chunks = [text[i : i + MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
+    translated_chunks = [
+        GoogleTranslator(source="auto", target=target_lang).translate(chunk)
+        for chunk in chunks
+    ]
+    return " ".join(translated_chunks)
