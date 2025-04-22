@@ -327,6 +327,7 @@ function Question3() {
     try {
       const response = await fetch(API_URL + "/api/submit/", {
         method: "POST",
+          mode: "no-cors",
         headers: {
             "Content-Type": "application/json",
             "Accept": "*/*",
@@ -457,6 +458,7 @@ function Completed() {
 
                 const response = await fetch(API_URL + "api/generate-devo/", {
                     method: "POST",
+                    mode: "no-cors",
                     headers: {
                         "Content-Type": "application/json",
                         "Accept": "*/*",
