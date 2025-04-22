@@ -457,9 +457,7 @@ function Completed() {
                         "Content-Type": "application/json",
                         "X-CSRFToken": getCookie("csrftoken"),
                     },
-                    body: JSON.stringify({
-                        quizState: quizState,
-                    }),
+                    body: JSON.stringify(quizState),
                 });
 
                 if (!response.ok) {
