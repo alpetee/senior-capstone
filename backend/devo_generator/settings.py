@@ -26,15 +26,15 @@ SECRET_KEY = "django-insecure-nfj_u$7c(=+$=#&!76_sxm!eud)ymzlw$sl&151+u1w+xkuqrv
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]  # TODO: update this later for somthing
-
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
-    "django.contrib.auth",
+    # "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    # "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",  # removed 'quiz'
@@ -44,10 +44,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    # "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -63,7 +63,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
+                # "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
         },
@@ -71,12 +71,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "devo_generator.wsgi.application"
-
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.dummy",  # Use a dummy backend that doesn't perform any database operations
+    }
+}
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",  # In-memory cache
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -117,8 +125,7 @@ STATIC_URL = "static/"  # TODO: use s3?
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-CORS_ALLOW_ALL_ORIGINS = True
-SESSION_ENGINE = "django.db.backends.dummy"
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # CORS Settings (for development)
 CORS_ALLOW_CREDENTIALS = True
 
