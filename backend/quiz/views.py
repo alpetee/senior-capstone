@@ -5,15 +5,6 @@ import json
 import os
 from dotenv import load_dotenv
 
-
-
-
-
-# API Keys
-# SCRIPTURE_API_KEY = os.getenv("SCRIPTURE_API_KEY") or getpass.getpass("Enter API key for Scripture API: ")
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or getpass.getpass("Enter API key for OpenAI: ")
-# # Headers for Scripture API
-# SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
 # Load variables from .env
 load_dotenv()
 
@@ -54,56 +45,6 @@ class DevoWriter:
         translated_chunks = [GoogleTranslator(source="auto", target=target_lang).translate(chunk) for chunk in chunks]
         return " ".join(translated_chunks)
 
-    # def generate_devo(self, request, language="en"):
-    #     from langchain_core.prompts import ChatPromptTemplate
-    #     from langchain_core.messages import AIMessage
-    #     """Generates a devotional based on quiz state."""
-    #     print("in top devo generator:")
-    #     if request.method == "POST":
-    #         quizState = request.session.get('quizState', {})  # Retrieve from sessions
-    #         print("Retrieved quizState!!!:", quizState)  # Debugging output
-    #     #     writer = DevoWriter()
-    #     #     devotional = writer.generate_devo(quizState, language="en")
-    #     #     return JsonResponse({"devo": devotional})
-    #     # return JsonResponse({"error": "Invalid request method"}, status=405)
-    #
-    #     topic = "LONLINESS" # quizState.get('q3')
-    #     culture = "MEXICO"# quizState.get('q1')
-    #     section = quizState.get('q2')
-    #     # if quiz_state.get('q2', '') == ('paralells between th two":'
-    #     #                                 '')
-    #
-    #     system_template = (
-    #         "You are a devotional writer skilled in cultural adaptation."
-    #         "Write a devotional on the following theme: {topic} noting that the listener is from {culture}."
-    #         "Include {topic} in the title."
-    #         "Include a relevant Bible verse from {section} of the bible. Ensure it resonates with the topic {topic} and {culture} culture."
-    #     )
-    #
-    #     prompt_template = ChatPromptTemplate.from_messages(
-    #         [("system", system_template), ("user", "{text}")]
-    #     )
-    #
-    #     prompt = prompt_template.invoke({
-    #         "topic": topic,
-    #         "culture": culture,
-    #         "section": section,
-    #         "text": "Write a devotional."
-    #     })
-    #
-    #     response = self.model.invoke(prompt)
-    #     # Handle both single AIMessage and list of AIMessage objects
-    #     if isinstance(response, list):  # Case where response is a list of messages
-    #         # Extract content from each message
-    #         response = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
-    #     elif isinstance(response, AIMessage):  # Case where response is a single message
-    #         response = response.content
-    #
-    #
-    #     if language != "en":
-    #         response = self.translate_text(response, language)
-    #     return response
-
 
 """
 for testiing other formatting: 
@@ -135,86 +76,7 @@ def submit_quiz(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 @csrf_exempt
-# def generate_devo(request):
-#     from langchain.chat_models import ChatOpenAI
-#     from langchain_core.prompts import ChatPromptTemplate
-#     from langchain_core.messages import AIMessage
-#
-#
-#
-#     """Generates a devotional based on quiz state."""
-#     print("\n=== GENERATE_DEVO VIEW TRIGGERED ===")  # Debug
-#
-#     if request.method == "POST":
-#         try:
-#             # Print raw request data for debugging
-#             print("Raw request body:", request.body)
-#
-#             # Parse JSON data
-#             data = json.loads(request.body)
-#             print("Parsed JSON data:", data)
-#
-#             quiz_state = data.get('quizState', {})
-#             print("Quiz state received:", quiz_state)
-#
-#             # Get values with defaults
-#             topic = quiz_state.get('q3', 'DEFAULT_TOPIC')
-#             culture = quiz_state.get('q1', 'DEFAULT_CULTURE')
-#             section = quiz_state.get('q2', 'DEFAULT_SECTION')
-#
-#             print(f"Generating devotional for: {topic}, {culture}, {section}")  # Debug
-#
-#             # System template
-#             system_template = (
-#                 "You are a devotional writer skilled in cultural adaptation.\n"
-#                 "Write a devotional on: {topic} for someone from {culture}.\n"
-#                 "Include '{topic}' in the title.\n"
-#                 "Include a relevant Bible verse from {section}."
-#             )
-#
-#             prompt_template = ChatPromptTemplate.from_messages([
-#                 ("system", system_template),
-#                 ("user", "Write a devotional.")
-#             ])
-#
-#             prompt = prompt_template.invoke({
-#                 "topic": topic,
-#                 "culture": culture,
-#                 "section": section,
-#             })
-#
-#             # Generate response
-#             model = ChatOpenAI(model="gpt-4o", api_key=OPENAI_API_KEY)
-#             response = model.invoke(prompt)
-#
-#             # Handle response
-#             if isinstance(response, list):
-#                 content = "\n".join([msg.content for msg in response if isinstance(msg, AIMessage)])
-#             elif isinstance(response, AIMessage):
-#                 content = response.content
-#             else:
-#                 content = str(response)
-#
-#             print("Generated devotional:", content)  # Debug
-#
-#             return JsonResponse({
-#                 "devo": content,
-#                 "status": "success",
-#                 "quiz_state_received": quiz_state
-#             })
-#
-#
-#         except Exception as e:
-#             print("Error in generate_devo:", str(e))  # Debug
-#             return JsonResponse({
-#                 "error": str(e),
-#                 "status": "error"
-#             }, status=500)
-#
-#     return JsonResponse({
-#         "error": "Invalid request method",
-#         "status": "error"
-#     }, status=405)
+
 def generate_devo(request):
     from langchain.chat_models import ChatOpenAI
     from langchain_core.prompts import ChatPromptTemplate

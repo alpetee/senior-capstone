@@ -54,6 +54,7 @@ orjson==3.10.16
 packaging==24.2
 placebo==0.9.0
 propcache==0.3.1
+psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pydantic==2.11.3
