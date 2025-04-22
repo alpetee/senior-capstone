@@ -456,7 +456,7 @@ function Completed() {
             try {
                 console.log("Sending quiz state to backend:", quizState);
 
-                const response = await fetch(API_URL + "api/generate-devo", {
+                const response = await fetch(API_URL + "/api/generate-devo", {
                     method: "POST",
                     mode: "no-cors",
                     headers: {
