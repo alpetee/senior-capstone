@@ -48,5 +48,5 @@
       "@babel/plugin-proposal-private-property-in-object"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "https://4x5cb0h8eh.execute-api.us-east-1.amazonaws.com/dev"
 }
