@@ -327,17 +327,17 @@ function Question3() {
     try {
       const response = await fetch(API_URL + "/api/submit", {
         method: "POST",
-          mode: "no-cors",
+        mode: "no-cors",
         headers: {
             "Content-Type": "application/json",
             "Accept": "*/*",
             "Accept-Encoding": "deflate, gzip",
             "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-          // "X-CSRFToken": getCookie("csrftoken"),
+            // "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify(completeQuizState)
-      });
+        });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
