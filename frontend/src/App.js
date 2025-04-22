@@ -334,9 +334,6 @@ function Question3() {
             "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
           // "X-CSRFToken": getCookie("csrftoken"),
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
         },
         body: JSON.stringify(completeQuizState)
       });
@@ -467,12 +464,8 @@ function Completed() {
                         "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
                         // "X-CSRFToken": getCookie("csrftoken"),
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                        "Access-Control-Allow-Headers": "Content-Type",
                     },
                     body: JSON.stringify(quizState),
-                    // mode: no
                 });
 
                 if (!response.ok) {
