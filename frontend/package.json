@@ -47,6 +47,5 @@
       "@babel/plugin-proposal-private-methods",
       "@babel/plugin-proposal-private-property-in-object"
     ]
-  },
-  "proxy": "https://4x5cb0h8eh.execute-api.us-east-1.amazonaws.com/dev"
+  }
 }
