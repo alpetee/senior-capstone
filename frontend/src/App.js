@@ -517,7 +517,12 @@ function Completed() {
                 flexDirection: "column",
                 alignItems: "flex-start",
                 position: "relative",
-                paddingBottom: "60vh"
+                overflow: "hidden",  // Prevent scrolling in tan area
+
+                paddingBottom: "25vh", // Adjusted this to create more space on small screens
+                        '@media (max-width: 600px)': {
+                    paddingBottom: "40vh", // Increase space for mobile devices
+                    }
             }}
         >
             <h1 style={{
