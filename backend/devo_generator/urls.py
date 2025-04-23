@@ -14,16 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from quiz import views  # Importing views from quiz app
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-
     # Direct API endpoints from quiz views
-    path("api/homepage/", views.homepage, name="homepage"),  # API response for frontend connection
+    path(
+        "api/homepage/", views.homepage, name="homepage"
+    ),  # API response for frontend connection
     path("", views.homepage, name="root-homepage"),  # Serve homepage at root
-
     # Include app-level URLs for the quiz app
     path("api/", include("quiz.urls")),  # Now all quiz URLs are prefixed with /api/
 ]

@@ -47,6 +47,5 @@
       "@babel/plugin-proposal-private-methods",
       "@babel/plugin-proposal-private-property-in-object"
     ]
-  },
-  "proxy": "http://localhost:8000"
+  }
 }

@@ -3,10 +3,10 @@ import { Button, Badge, Grid, Flex, Container, Title, Text } from '@mantine/core
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
 
-// const globalQuizState = {}; // Stores quiz answers
 const QuizContext = createContext();
-// Provide Context
+
 export function QuizProvider({ children }) {
   const [quizState, setQuizState] = useState({});
 
@@ -21,7 +21,6 @@ export function QuizProvider({ children }) {
   );
 }
 
-// Hook for consuming context
 export function useQuiz() {
   return useContext(QuizContext);
 }
@@ -30,12 +29,10 @@ function LandingPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Prevent scrolling when component mounts
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
     return () => {
-      // Re-enable scrolling when leaving the page
       document.body.style.overflow = "auto";
       document.documentElement.style.overflow = "auto";
     };
@@ -48,7 +45,7 @@ function LandingPage() {
       justify="center"
       style={{
           backgroundColor: '#1F297A',
-          minHeight: '100vh', // Fix for mobile height issues
+          minHeight: '100vh',
           width: '100%',
           overflow: 'hidden',
           textAlign: 'center',
@@ -59,13 +56,13 @@ function LandingPage() {
           order={1}
           c="white"
           size={55}
-          ta="clamp(2rem, 5vw, 3.8rem">
+          ta="center">
         YOUR DAILY BREAD
       </Title>
       <Text
         c="white"
         align="center"
-        size="clamp(0.875rem, 5vw, 1.3rem)" // min, scale up, max
+        size="clamp(0.875rem, 5vw, 1.3rem)"
         my="md"
         style={{
             maxWidth: '90%',
@@ -96,23 +93,21 @@ function LandingPage() {
 
 function Question1() {
   const navigate = useNavigate();
-  const [selectedChoice] = useState(null); // just for making it darker
+  const [selectedChoice] = useState(null);
   const { updateQuizState } = useQuiz();
 
   useEffect(() => {
-    // Prevent scrolling when component mounts
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
     return () => {
-      // Re-enable scrolling when leaving the page
       document.body.style.overflow = "auto";
       document.documentElement.style.overflow = "auto";
     };
   }, []);
 
   const handleChoice = (choice) => {
-    updateQuizState("q1", choice); // Saves selected choice to state
+    updateQuizState("q1", choice);
     navigate('/q2');
   };
 
@@ -127,21 +122,18 @@ function Question1() {
           justifyContent: 'center',
           textAlign: 'center'
     }}>
-      {/* First section: Title */}
       <h2
           style={{
               color: '#CC532E',
               display: 'flex',
               alignItems: 'center',
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)', // maybe update depending on liking later
-              maxWidth: '90%', // Prevents text overflow
-
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              maxWidth: '90%',
               justifyContent: 'center'
       }}>
           WHAT CULTURAL CONTEXT DO YOU PREFER FOR READING YOUR DEVOTIONAL?
       </h2>
 
-      {/* Second section: Choices */}
       <div
           style={{
               display: 'flex',
@@ -154,14 +146,14 @@ function Question1() {
             key={option}
             variant="filled"
             size="lg"
-            radius="999px" // Fully rounded!
+            radius="999px"
             sx={{
                 backgroundColor: selectedChoice === option ? '#6B6317' : '#B8A826',
                 color: 'white',
               fontWeight: 'bold',
-              fontSize: 'clamp(1.3rem, 2.5vw, 1.5rem)', // Scales text dynamically
-                height: 'clamp(5rem, 7vw, 15rem)', // Scales button height
-                width: 'clamp(2rm, 10vw, 5rm)', // Dynamic button width
+              fontSize: 'clamp(1.3rem, 2.5vw, 1.5rem)',
+                height: 'clamp(5rem, 7vw, 15rem)',
+                width: 'clamp(2rm, 10vw, 5rm)',
               textAlign: 'center',
               '&:hover': { backgroundColor: '#6B6317' },
               display: 'flex',
@@ -170,30 +162,29 @@ function Question1() {
             }}
             onClick={() => handleChoice(option)}
           >
-{option.split('\n').map((text, index) => (
-        <React.Fragment key={index}>
-          {text}
-          {index !== option.split('\n').length - 1 && <br />} {/* Add a <br /> except for the last part */}
-        </React.Fragment>
-      ))}          </Button>
+            {option.split('\n').map((text, index) => (
+              <React.Fragment key={index}>
+                {text}
+                {index !== option.split('\n').length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </Button>
         ))}
       </div>
 
-      {/* Third Third: Page Number */}
       <div
           style={{
-              position: 'absolute', // Position it relative to the viewport
-              left: '50%', // Center it horizontally
-              transform: 'translateX(-50%)', // Ensures perfect centering
-              bottom: 'min(5vh, 80px)', // Prevents it from going too high on zoom
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              bottom: 'min(5vh, 80px)',
         }}>
-          {/* Page Number */}
         <Badge
           sx={{
             backgroundColor: '#CC532E',
             color: 'white',
             fontWeight: 'bold',
-            fontSize: 'clamp(0.8rem, 4vw, .8rem)', // Dynamic font size (scales based on viewport width)
+            fontSize: 'clamp(0.8rem, 4vw, .8rem)',
         }}>
           1/3
         </Badge>
@@ -213,18 +204,17 @@ function ArchButton({ children, onClick }) {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 'clamp(1.2rem, 2.5vw, 2rem)',
-        height: 'clamp(40vh, 76vh, 85vh)', //40vh, 55vh, 60vh
+        height: 'clamp(40vh, 76vh, 85vh)',
         width: 'clamp(16vh, 20vw, 25vw)',
         textAlign: 'center',
-        borderRadius: '9999px', // Fully rounded pill shape
+        borderRadius: '9999px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'flex-start', // Align text to the top
-        lineHeight: '1', // Compacts text vertically
+        justifyContent: 'flex-start',
+        lineHeight: '1',
         position: 'relative',
-              '@media (max-width: 600px)': { height: '40vh' }, // Way smaller on mobile
-
+        '@media (max-width: 600px)': { height: '40vh' },
       }}
       onClick={onClick}
     >
@@ -235,23 +225,21 @@ function ArchButton({ children, onClick }) {
 
 function Question2() {
   const navigate = useNavigate();
-  const [selectedChoice] = useState(null); // just for making it darker
+  const [selectedChoice] = useState(null);
   const { updateQuizState } = useQuiz();
 
   useEffect(() => {
-    // Prevent scrolling when component mounts
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
     return () => {
-      // Re-enable scrolling when leaving the page
       document.body.style.overflow = "auto";
       document.documentElement.style.overflow = "auto";
     };
   }, []);
 
   const handleChoice = (choice) => {
-    updateQuizState("q2", choice); // Saves selected choice to state
+    updateQuizState("q2", choice);
     navigate('/q3');
   };
 
@@ -267,57 +255,48 @@ function Question2() {
           textAlign: 'center'
     }}
     >
-      {/* First section: Title */}
       <h2
           style={{
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
-                // marginTop: '20vh', // Lower the heading
-
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)', // maybe update depending on liking later
-              maxWidth: '90%', // Prevents text overflow
-             marginTop: 'min(13vh)', // Pushes it lower dynamically
-
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              maxWidth: '90%',
+             marginTop: 'min(13vh)',
               justifyContent: 'center'
       }}>
           WHAT BIBLE AREA ARE YOU CURIOUS ABOUT?
       </h2>
-      {/* Second Third: Choices (Positioned Lower) */}
       <div style={{
-        // flex: 1,
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-end', // Push buttons lower
+        alignItems: 'flex-end',
       }}>
         {['OLD \nTESTAMENT', 'PARELLELS \nBETWEEN \nTHE TWO', 'NEW \nTESTAMENT'].map((option) => (
-      <ArchButton key={option} onClick={() => handleChoice(option)}>
-        {option.split('\n').map((line, index) => (
-          <React.Fragment key={index}>
-            {line}
-            <br />
-          </React.Fragment>
-        ))}
-      </ArchButton>
+          <ArchButton key={option} onClick={() => handleChoice(option)}>
+            {option.split('\n').map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+          </ArchButton>
         ))}
       </div>
 
-      {/* Third Third: Page Number */}
       <div
           style={{
-              position: 'absolute', // Position it relative to the viewport
-              left: '50%', // Center it horizontally
-              transform: 'translateX(-50%)', // Ensures perfect centering
-              bottom: 'min(5vh, 80px)', // Prevents it from going too high on zoom
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              bottom: 'min(5vh, 80px)',
         }}>
-          {/* Page Number */}
         <Badge
           sx={{
             backgroundColor: '#FFFFFF',
-
             color: '#1F297A',
             fontWeight: 'bold',
-            fontSize: 'clamp(0.8rem, 4vw, .8rem)', // Dynamic font size (scales based on viewport width)
+            fontSize: 'clamp(0.8rem, 4vw, .8rem)',
         }}>
           2/3
         </Badge>
@@ -326,41 +305,39 @@ function Question2() {
   );
 }
 
-
 function Question3() {
   const navigate = useNavigate();
   const { quizState, updateQuizState } = useQuiz();
   const [selectedChoice, setSelectedChoice] = useState(null);
 
-  // Debug current quiz state
   useEffect(() => {
     console.log("Current quiz state in Question3:", quizState);
   }, [quizState]);
 
   const handleChoice = async (choice) => {
-    // Update local state immediately
     setSelectedChoice(choice);
-
-    // Create the complete quiz state object
     const completeQuizState = {
-      ...quizState,  // Spread existing state (should include q1 and q2)
-      q3: choice     // Add the current selection
+      ...quizState,
+      q3: choice
     };
 
-    // Update global quiz state
     updateQuizState("q3", choice);
-
     console.log("Full quiz state being sent:", completeQuizState);
 
     try {
-      const response = await fetch("http://localhost:8000/api/submit_quiz/", {
+      const response = await fetch(API_URL + "/api/submit", {
         method: "POST",
+        mode: "no-cors",
         headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken") // Add CSRF token if needed
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "Accept-Encoding": "deflate, gzip",
+            "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+            // "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify(completeQuizState),
-      });
+        body: JSON.stringify(completeQuizState)
+        });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -371,18 +348,17 @@ function Question3() {
 
     } catch (error) {
       console.error("Submission error:", error);
-      // Optionally show error to user
     }
 
     navigate("/completed");
   };
 
-  // Add CSRF token helper if needed
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
   }
+
   return (
     <div
       style={{
@@ -395,7 +371,6 @@ function Question3() {
         textAlign: "center",
       }}
     >
-      {/* Title */}
       <h2
         style={{
           color: "#ECEAD8",
@@ -406,28 +381,26 @@ function Question3() {
         ARE YOU STRUGGLING WITH ANYTHING YOU WANT TO ADDRESS?
       </h2>
 
-      {/* Second section: Choices */}
       <div
           style={{
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignContent: 'center',
-              // width? still figuring out
       }}>
         {["ANXIETY", "LONLINESS", "DOUBT", "NOTHING SPECIFIC"].map((option) => (
           <Button
             key={option}
             variant="filled"
             size="lg"
-            radius="999px" // Fully rounded!
+            radius="999px"
             sx={{
                 backgroundColor: selectedChoice === option ? '#A84526' : '#CC532E',
                 color: 'white',
               fontWeight: 'bold',
-              fontSize: 'clamp(1.3rem, 2.5vw, 1.5rem)', // Scales text dynamically
-                height: 'clamp(5rem, 7vw, 15rem)', // Scales button height
-                width: 'clamp(2rm, 10vw, 5rm)', // Dynamic button width
+              fontSize: 'clamp(1.3rem, 2.5vw, 1.5rem)',
+                height: 'clamp(5rem, 7vw, 15rem)',
+                width: 'clamp(2rm, 10vw, 5rm)',
               textAlign: 'center',
               '&:hover': { backgroundColor: '#A84526' },
               display: 'flex',
@@ -436,19 +409,16 @@ function Question3() {
             }}
             onClick={() => handleChoice(option)}
           >
-{option.split('\n').map((text, index) => (
-        <React.Fragment key={index}>
-          {text}
-          {index !== option.split('\n').length - 1 && <br />} {/* Add a <br /> except for the last part */}
-        </React.Fragment>
-      ))}          </Button>
+            {option.split('\n').map((text, index) => (
+              <React.Fragment key={index}>
+                {text}
+                {index !== option.split('\n').length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </Button>
         ))}
       </div>
 
-
-
-
-      {/* Page Number */}
       <div
         style={{
           position: "absolute",
@@ -474,42 +444,54 @@ function Question3() {
 
 function Completed() {
     const { quizState } = useQuiz();
-    const [devotional, setDevotional] = useState("Generating your devotional...");
+    const [devotional, setDevotional] = useState({
+        title_devo: "Generating your devotional...",
+        verse_devo: "",
+        content_devo: "",
+        prayer_devo: ""
+    });
 
     useEffect(() => {
         const fetchDevo = async () => {
             try {
-                console.log("Sending quiz state to backend:", quizState); // Debug log
+                console.log("Sending quiz state to backend:", quizState);
 
-                const response = await fetch("http://localhost:8000/api/generate-devo/", {
+                const response = await fetch(API_URL + "/api/generate-devo", {
                     method: "POST",
+                    // mode: "no-cors",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken"), // Add CSRF token
+                        "Accept": "*/*",
+                        "Accept-Encoding": "deflate, gzip",
+                        "Host": "4x5cb0h8eh.execute-api.us-east-1.amazonaws.com",
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+                        // "X-CSRFToken": getCookie("csrftoken"),
                     },
-                    body: JSON.stringify({
-                        quizState: quizState,
-                    }),
+                    body: JSON.stringify(quizState),
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                // beginning of chunk ethan talked about
+                //if (!response.ok) {
+                //    throw new Error(`HTTP error! status: ${response.status}`);
+                //}// comment this out? or moce the error before?
 
                 const data = await response.json();
-                console.log("Received devotional:", data); // Debug log
-                setDevotional(data.devo || "No devotional content received");
+                console.log("Received devotional:", data);
+                setDevotional(data);
 
             } catch (error) {
                 console.error("Error fetching devotional:", error);
-                setDevotional(`There was an error generating your devotional: ${error.message}`);
+                setDevotional({
+                    title_devo: `There was an error generating your devotional: ${error.message}`,
+                    verse_devo: "",
+                    content_devo: "",
+                    prayer_devo: ""
+                });
             }
         };
 
         fetchDevo();
     }, [quizState]);
 
-    // Add this helper function for CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -525,72 +507,97 @@ function Completed() {
         return cookieValue;
     }
 
-    // ... rest of your component code
-
     return (
         <div
             style={{
                 backgroundColor: "#DED1B9",
-                minHeight: "200vh",
-                padding: "5vh", // Responsive padding
+                minHeight: "100vh",
+                padding: "5vh",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 position: "relative",
+                overflow: "hidden",  // Prevent scrolling in tan area
+
+                paddingBottom: "25vh", // Adjusted this to create more space on small screens
+                        '@media (max-width: 600px)': {
+                    paddingBottom: "40vh", // Increase space for mobile devices
+                    }
             }}
         >
             <h1 style={{
                 color: "white",
-                fontSize: "clamp(1.5rem, 4vw, 5vh)", // title sizing.
+                fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
+                marginBottom: "2rem",
+                width: "100%",
+                textAlign: "center"
             }}>
-                here is your customized devo on <br/>
-                <span style={{color: "#B8A826"}}>{quizState["q3"]}</span> through a{" "}
-                <span style={{color: "#CC532E"}}>{quizState["q1"]}</span> cultural lens.
+                here is your customized devo on <br />
+                <span style={{ color: "#B8A826" }}>{quizState["q3"]}</span> through a{" "}
+                <span style={{ color: "#CC532E" }}>{quizState["q1"]}</span> cultural lens.
             </h1>
 
             <div
                 style={{
-
                     backgroundColor: "#1F297A",
-                    minHeight: "clamp(150vh, 180vh, 190vh)",
+                    minHeight: "50vh",
                     color: "white",
-                    padding: "clamp(3vh, 5vh, 7vh) clamp(4vw, 6vw, 8vw)",
-                   borderRadius: "100% 100% 0 0", // Creates an arch effect
-                    fontSize: "clamp(1.5vh, 2vh, 2.5vh)",
-                    height: "clamp(40vh, 50vh, 60vh)", // Adjust height of the arch
-                    width: "clamp(90vw, 100vw, 120vw)", // Make it fill the screen width
-                    position: "absolute", // Positions it at the bottom
-                    bottom: "0", // Anchors it to the bottom
-                    left: "50%", // Centers it horizontally
-                    transform: "translateX(-50%)", // Ensures proper centering
+                    padding: "5vh 7vw",
+                    borderRadius: "50% 50% 0 0 / 20%",
+                    fontSize: "clamp(1rem, 1.2rem, 1.5rem)",
+                    width: "100vw",
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
                     display: "flex",
                     flexDirection: "column",
-                    justifyContent: "center",
+                    justifyContent: "flex-start",
                     alignItems: "center",
                     textAlign: "center",
                     boxSizing: "border-box",
-                    overflow: "hidden", // makes sure text doesn't overflow
-                    wordWrap: "break-word", // breaks long words if necessary
-                whiteSpace: "normal", // Ensures text wraps normally
-                    '@media (max-width: 600px)': { borderRadius: "5px 5px 0 0" },  // working on getting the round right for mobile. should be changed to percents eventually.
-}}
+                    overflow: "auto",
+                    maxHeight: "70vh",
+                    '@media (max-width: 600px)': {
+                        borderRadius: "50% 50% 0 0 / 10%",
+                        padding: "4vh 5vw",
+                        fontSize: "1rem",
+                        maxHeight: "60vh"
+                    }
+                }}
             >
-                {devotional}
-                <Button
-                    variant="filled"
-                    size="lg"
-                    radius="999px"
-                    sx={{
-                        backgroundColor: "#B8A926",
-                        color: "#ECEAD8",
-                        fontWeight: "bold",
-                        "&:hover": {backgroundColor: "#ECEAD8", color: "#B8A926"},
-                        position: 'fixed',
-                        bottom: "10vh", // Add some space from the bottom
-                    }}
-                >
-                    save
-                </Button>
+                <div style={{
+                    maxWidth: "800px",
+                    width: "100%",
+                    padding: "0 2rem",
+                    marginBottom: "4rem"
+                }}>
+                    <h2 style={{ fontSize: "1.5em", marginBottom: "1.5rem" }}>{devotional.title_devo}</h2>
+                    <p style={{ fontStyle: "italic", marginBottom: "1.5rem" }}>{devotional.verse_devo}</p>
+                    <p style={{ marginBottom: "1.5rem", textAlign: "left" }}>{devotional.content_devo}</p>
+                    <p style={{ fontStyle: "italic" }}>{devotional.prayer_devo}</p>
+
+                    {/* Button with click event to redirect to the specified URL */}
+                    <Button
+                        variant="filled"
+                        size="lg"
+                        radius="999px"
+                        sx={{
+                            backgroundColor: "#B8A926",
+                            color: "#ECEAD8",
+                            fontWeight: "bold",
+                            "&:hover": { backgroundColor: "#ECEAD8", color: "#B8A926" },
+                            marginTop: "2rem", // Add some space between the prayer and button
+                        }}
+                        onClick={() => {
+                            // Redirect the user to the Google Forms link
+                            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSdW73AFeoJ5E5ayJCTBqNEDaYgMb9qfzeziVGguqawhHKyusw/viewform?usp=header";
+                        }}
+                    >
+                        feedback!
+                    </Button>
+
+                </div>
             </div>
         </div>
     );
@@ -598,7 +605,6 @@ function Completed() {
 
 function App() {
     return (
-
         <QuizProvider>
             <Router>
                 <Routes>
@@ -613,5 +619,5 @@ function App() {
     );
 }
 
-export {Completed}; // Named export
-export default App; // Default export
+export {Completed};
+export default App;

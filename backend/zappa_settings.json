@@ -1,0 +1,20 @@
+{
+  "dev": {
+    //"project_dir": "backend",
+    "app_function": "devo_generator.wsgi.application",
+    "django_settings": "devo_generator.settings",
+    //"profile_name": null,
+    //"project_name": "senior-capstone",
+    "aws_region": "us-east-1",  // Fixed the missing quote
+    "runtime": "python3.10",
+    "health_check": false,
+    "s3_bucket": "daily-bread03",
+    // "domain": "www.yourdailybread.dev",
+    // "certificate_arn": "arn:aws:acm:us-east-1:452647511361:certificate/82a913a3-d14d-4eba-89f0-1224dd6796f7",
+    "slim_handler": true,
+    "exclude": [
+      "tests", "*.pyc", "*.pyo", "__pycache__", "node_modules", "venv", "venv/*",
+      ".venv", ".venv/*", "static", "media", ".git", "*.db", "*.sqlite3"
+    ]
+  }
+}
