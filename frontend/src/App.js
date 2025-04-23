@@ -571,6 +571,27 @@ function Completed() {
                     <p style={{ fontStyle: "italic", marginBottom: "1.5rem" }}>{devotional.verse_devo}</p>
                     <p style={{ marginBottom: "1.5rem", textAlign: "left" }}>{devotional.content_devo}</p>
                     <p style={{ fontStyle: "italic" }}>{devotional.prayer_devo}</p>
+
+                    {/* Button with click event to redirect to the specified URL */}
+                    <Button
+                        variant="filled"
+                        size="lg"
+                        radius="999px"
+                        sx={{
+                            backgroundColor: "#B8A926",
+                            color: "#ECEAD8",
+                            fontWeight: "bold",
+                            "&:hover": { backgroundColor: "#ECEAD8", color: "#B8A926" },
+                            marginTop: "2rem", // Add some space between the prayer and button
+                        }}
+                        onClick={() => {
+                            // Redirect the user to the Google Forms link
+                            window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSdW73AFeoJ5E5ayJCTBqNEDaYgMb9qfzeziVGguqawhHKyusw/viewform?usp=header";
+                        }}
+                    >
+                        feedback!
+                    </Button>
+
                 </div>
             </div>
         </div>
