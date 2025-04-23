@@ -4,6 +4,8 @@
 node_modules
 .pnp
 .pnp.js
+openai_api_key.json
+scripture_api_key.json
 
 # testing
 coverage

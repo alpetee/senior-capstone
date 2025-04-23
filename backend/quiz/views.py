@@ -18,6 +18,30 @@ SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
 globalQuizState = {}
 
 
+def get_openai_key():
+    global OPENAI_API_KEY
+    if not OPENAI_API_KEY:
+        # load from file
+        with open("quiz/openai_api_key.json", "r") as f:
+            OPENAI_API_KEY = json.loads(f.read())["key"]
+
+
+get_openai_key()
+
+
+def get_scripture_key():
+    global SCRIPTURE_API_KEY
+    if not SCRIPTURE_API_KEY:
+        # load from file
+        with open("quiz/scripture_api_key.json", "r") as f:
+            SCRIPTURE_API_KEY = json.loads(f.read())["key"]
+    global SCRIPTURE_HEADERS
+    SCRIPTURE_HEADERS = {"api-key": SCRIPTURE_API_KEY}
+
+
+get_scripture_key()
+
+
 def homepage(request):
     # Return a JSON response with the homepage message
     print("=== Homepage View Triggered ===")
@@ -95,8 +119,9 @@ def generate_devo(request):
 
     """Generates a devotional based on quiz state."""
     print("\n=== GENERATE_DEVO VIEW TRIGGERED ===")  # Debug
-
+    print("REQUEST METHOD:", request.method)
     if request.method == "POST":
+        print("POST METHOD FOUND")
         try:
             # Parse JSON data
             data = json.loads(request.body)

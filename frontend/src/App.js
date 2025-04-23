@@ -469,10 +469,10 @@ function Completed() {
                     },
                     body: JSON.stringify(quizState),
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                // beginning of chunk ethan talked about
+                //if (!response.ok) {
+                //    throw new Error(`HTTP error! status: ${response.status}`);
+                //}// comment this out? or moce the error before?
 
                 const data = await response.json();
                 console.log("Received devotional:", data);
