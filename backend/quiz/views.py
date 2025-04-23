@@ -127,7 +127,7 @@ def generate_devo(request):
             data = json.loads(request.body)
             print("Parsed JSON data:", data)
 
-            quiz_state = data.get("quizState", {})
+            quiz_state = data
             print("Quiz state received:", quiz_state)
 
             # Get values with defaults
@@ -194,6 +194,7 @@ def generate_devo(request):
                 "**", ""
             )  # Combine "Prayer:" label and prayer text, remove '**'
 
+            print("-----------", title, verse, body, prayer, quiz_state)
             # Return structured data
             return JsonResponse(
                 {
